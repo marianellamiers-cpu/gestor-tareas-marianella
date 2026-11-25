@@ -1,5 +1,10 @@
 import type { Task, TaskStatus } from '../types/task';
 
+// Paso a minuscula y saco espacios de los costados para comparar
+function normalizar(texto: string): string {
+  return texto.trim().toLowerCase();
+}
+
 export function filterTasks(tasks: Task[], query: string, status: TaskStatus): Task[] {
   const byStatus = tasks.filter((task) => {
     if (status === 'pendientes') return !task.completed;
@@ -7,5 +12,7 @@ export function filterTasks(tasks: Task[], query: string, status: TaskStatus): T
     return true;
   });
 
-  return byStatus.filter((task) => task.title.includes(query));
+  // Corregido: includes() distingue mayusculas, por eso "VALIDAR" no encontraba "Validar login"
+  const buscado = normalizar(query);
+  return byStatus.filter((task) => normalizar(task.title).includes(buscado));
 }
