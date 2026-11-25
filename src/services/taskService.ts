@@ -1,18 +1,56 @@
 import type { Task } from '../types/task';
+import { llamarApi } from './cliente';
 
-const INITIAL_TASKS: Task[] = [
-  { id: 't01', title: 'Validar login', description: 'Comprobar campos vacíos y credenciales incorrectas.', priority: 'alta', completed: false },
-  { id: 't02', title: 'Corregir navegación', description: 'Validar el regreso desde el detalle.', priority: 'media', completed: true },
-  { id: 't03', title: 'Probar API lenta', description: 'Simular una demora y verificar los indicadores de carga.', priority: 'alta', completed: false },
-  { id: 't04', title: 'Generar reporte', description: 'Documentar los fallos detectados y su corrección.', priority: 'baja', completed: false },
-  { id: 't05', title: 'Revisar validaciones', description: 'Asegurar el tratamiento de espacios y datos vacíos.', priority: 'media', completed: true },
-];
+// Forma en la que el backend manda cada tarea (ver /docs del servidor)
+type TareaServidor = {
+  id: number;
+  title: string;
+  description: string | null;
+  completed: boolean;
+};
 
-// Servicio mock: 700 ms de latencia, no requiere conexión ni servidor backend.
+// Paso de la forma del servidor a la forma que usa la app
+export function aTarea(dato: TareaServidor): Task {
+  return {
+    id: String(dato.id),
+    title: dato.title,
+    description: dato.description ?? '',
+    priority: 'media', // el backend no guarda prioridad
+    completed: dato.completed,
+  };
+}
+
+// GET /tasks/  (sin limit el servidor manda solo 10)
 export async function fetchTasks(simulateFailure = false): Promise<Task[]> {
-  await new Promise<void>((resolve) => setTimeout(resolve, 700));
   if (simulateFailure) {
     throw new Error('HTTP 503: servidor temporalmente indisponible (simulado)');
   }
-  return INITIAL_TASKS.map((task) => ({ ...task }));
+  const datos = await llamarApi<TareaServidor[]>('/tasks/?skip=0&limit=100');
+  return datos.map(aTarea);
+}
+
+// POST /tasks/
+export async function crearTarea(titulo: string, descripcion: string): Promise<Task> {
+  const creada = await llamarApi<TareaServidor>('/tasks/', 'POST', {
+    title: titulo.trim(),
+    description: descripcion.trim(),
+    completed: false,
+  });
+  return aTarea(creada);
+}
+
+// PUT /tasks/{id}  -> lo uso para completar y para editar.
+// El backend no tiene PATCH, entonces siempre mando los tres campos.
+export async function guardarTarea(tarea: Task): Promise<Task> {
+  const guardada = await llamarApi<TareaServidor>(`/tasks/${tarea.id}`, 'PUT', {
+    title: tarea.title.trim(),
+    description: tarea.description,
+    completed: tarea.completed,
+  });
+  return aTarea(guardada);
+}
+
+// DELETE /tasks/{id}
+export async function borrarTarea(id: string): Promise<void> {
+  await llamarApi<void>(`/tasks/${id}`, 'DELETE');
 }

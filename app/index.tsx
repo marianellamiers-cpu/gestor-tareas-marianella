@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { TaskCard } from '../src/components/TaskCard';
 import { StatusTabs } from '../src/components/StatusTabs';
-import { fetchTasks } from '../src/services/taskService';
+import { borrarTarea, crearTarea, fetchTasks, guardarTarea } from '../src/services/taskService';
 import type { Task, TaskStatus } from '../src/types/task';
 import { filterTasks } from '../src/utils/taskFilters';
 import { isValidTaskTitle } from '../src/utils/taskValidation';
@@ -20,7 +20,7 @@ export default function TaskManagerScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState('');
-  const nextId = useRef(100);
+  const [ocupado, setOcupado] = useState(false);
 
   async function loadTasks(simulateFailure = false) {
     setLoading(true);
@@ -46,7 +46,8 @@ export default function TaskManagerScreen() {
   const total = tasks.length;
   const completed = tasks.filter((task) => task.completed).length;
 
-  function toggleTask(id: string) {
+  async function toggleTask(id: string) {
+    const anterior = tasks;
     // Corregido: no hay que cambiar el objeto del estado directamente.
     // Creo una lista nueva y una copia de la tarea modificada para que React la redibuje.
     const nuevaLista = tasks.map((task) => {
@@ -54,29 +55,46 @@ export default function TaskManagerScreen() {
       return { ...task, completed: !task.completed };
     });
     setTasks(nuevaLista);
+    const cambiada = nuevaLista.find((task) => task.id === id);
+    if (!cambiada) return;
+    try {
+      await guardarTarea(cambiada);
+    } catch (caught) {
+      console.error('[toggleTask] el servidor no guardo el cambio', caught);
+      setTasks(anterior); // vuelvo a como estaba
+      setFeedback(caught instanceof Error ? caught.message : 'No se pudo guardar el cambio.');
+    }
   }
 
-  function addTask() {
+  async function addTask() {
     if (!isValidTaskTitle(newTitle)) {
       setFeedback('Ingresá un nombre válido para continuar.');
       return;
     }
-    const task: Task = {
-      id: `nuevo-${nextId.current++}`,
-      title: newTitle,
-      description: 'Tarea creada durante el taller de debugging.',
-      priority: 'media',
-      completed: false,
-    };
-    setTasks((previous) => [task, ...previous]);
-    setNewTitle('');
-    setFeedback('Tarea agregada.');
-    Keyboard.dismiss();
+    setOcupado(true);
+    try {
+      const task = await crearTarea(newTitle, 'Creada desde la app de Marianella.');
+      setTasks((previous) => [task, ...previous]);
+      setNewTitle('');
+      setFeedback('Tarea agregada.');
+      Keyboard.dismiss();
+    } catch (caught) {
+      console.error('[addTask] no se pudo crear', caught);
+      setFeedback(caught instanceof Error ? caught.message : 'No se pudo agregar.');
+    } finally {
+      setOcupado(false);
+    }
   }
 
-  function deleteTask(id: string) {
-    setTasks((previous) => previous.filter((task) => task.id !== id));
-    setFeedback('Tarea eliminada.');
+  async function deleteTask(id: string) {
+    try {
+      await borrarTarea(id);
+      setTasks((previous) => previous.filter((task) => task.id !== id));
+      setFeedback('Tarea eliminada.');
+    } catch (caught) {
+      console.error('[deleteTask] no se pudo borrar', caught);
+      setFeedback(caught instanceof Error ? caught.message : 'No se pudo eliminar.');
+    }
   }
 
   return (
@@ -86,7 +104,7 @@ export default function TaskManagerScreen() {
         // Corregido: con el indice como key, al filtrar quedaba expandida otra tarjeta
         keyExtractor={(item) => `tarea-${item.id}`}
         renderItem={({ item }) => (
-          <TaskCard task={item} onToggle={() => toggleTask(item.id)} onDelete={() => deleteTask(item.id)} />
+          <TaskCard task={item} onToggle={() => void toggleTask(item.id)} onDelete={() => void deleteTask(item.id)} />
         )}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.listContainer}
@@ -128,8 +146,8 @@ export default function TaskManagerScreen() {
                 returnKeyType="done"
                 style={styles.addInput}
               />
-              <Pressable accessibilityRole="button" testID="add-task-button" style={styles.addButton} onPress={addTask}>
-                <Text style={styles.addButtonText}>Agregar</Text>
+              <Pressable accessibilityRole="button" testID="add-task-button" style={[styles.addButton, ocupado && { opacity: 0.5 }]} onPress={() => void addTask()} disabled={ocupado}>
+                <Text style={styles.addButtonText}>{ocupado ? '...' : 'Agregar'}</Text>
               </Pressable>
             </View>
             {feedback ? <Text style={styles.feedback}>{feedback}</Text> : null}
