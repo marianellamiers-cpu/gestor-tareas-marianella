@@ -23,4 +23,4 @@ test('se puede editar el titulo de una tarea desde la pantalla', async () => {
 
   await waitFor(() => expect(pantalla.getByText('Titulo nuevo')).toBeTruthy());
   expect(servidorFalso.mock.calls.some((llamada) => llamada[1]?.method === 'PUT')).toBe(true);
-});
+}, 20000); // en Windows la primera vez tarda mas de 5 s en dibujar la pantalla
