@@ -151,13 +151,13 @@ export default function TaskManagerScreen() {
         ListHeaderComponent={
           <>
             <View style={styles.eyebrowRow}>
-              <Text style={styles.eyebrow}>LABORATORIO · REACT NATIVE</Text>
+              <Text style={styles.eyebrow}>EDI · APP CONECTADA</Text>
               <Pressable accessibilityRole="button" onPress={() => router.push('/guia')} style={styles.helpButton}>
                 <Text style={styles.helpText}>Guía ↗</Text>
               </Pressable>
             </View>
-            <Text style={styles.heading}>Gestor de tareas</Text>
-            <Text style={styles.subtitle}>Proyecto de clase para diagnosticar errores reales.</Text>
+            <Text style={styles.heading}>Mis tareas</Text>
+            <Text style={styles.subtitle}>Marianella Miers · backend de Programación III</Text>
 
             <View style={styles.statsRow}>
               <View style={[styles.stat, styles.statDark]}>
@@ -211,7 +211,7 @@ export default function TaskManagerScreen() {
 
             <View style={styles.actions}>
               <Pressable accessibilityRole="button" style={styles.retryButton} onPress={() => void loadTasks()}>
-                <Text style={styles.retryLabel}>↻ Recargar datos</Text>
+                <Text style={styles.retryLabel}>↻ Actualizar lista</Text>
               </Pressable>
               <Pressable accessibilityRole="button" testID="simulate-error-button" style={styles.simulateButton} onPress={() => void loadTasks(true)}>
                 <Text style={styles.simulateLabel}>⚠ Simular error API</Text>
@@ -220,31 +220,31 @@ export default function TaskManagerScreen() {
             {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
             {loading ? (
               <View style={styles.loading}>
-                <ActivityIndicator color="#147D73" size="large" />
-                <Text style={styles.loadingLabel}>Consultando tareas…</Text>
+                <ActivityIndicator color="#6A43C7" size="large" />
+                <Text style={styles.loadingLabel}>Trayendo tareas del servidor…</Text>
               </View>
             ) : null}
           </>
         }
-        ListEmptyComponent={!loading ? <Text style={styles.empty}>No hay tareas para mostrar con estos filtros.</Text> : null}
-        ListFooterComponent={<Text style={styles.footer}>EDI · Desarrollo de Software Multiplataforma · Auditoría técnica</Text>}
+        ListEmptyComponent={!loading ? <Text style={styles.empty}>No encontré tareas con ese filtro.</Text> : null}
+        ListFooterComponent={<Text style={styles.footer}>EDI · Tareas Marianella · conectado a api.montenegroariel.com.ar</Text>}
       />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F5F7FB' },
+  screen: { flex: 1, backgroundColor: '#F8F6FD' },
   listContainer: { paddingHorizontal: 19, paddingTop: 18, paddingBottom: 55, flexGrow: 1 },
   eyebrowRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  eyebrow: { fontSize: 10, letterSpacing: 1.5, fontWeight: '900', color: '#168879' },
-  helpButton: { backgroundColor: '#E5EFEC', paddingVertical: 8, paddingHorizontal: 11, borderRadius: 9 },
-  helpText: { fontWeight: '800', color: '#187A71', fontSize: 12 },
-  heading: { fontSize: 30, fontWeight: '900', color: '#172743', marginTop: 12 },
+  eyebrow: { fontSize: 10, letterSpacing: 1.5, fontWeight: '900', color: '#7A52D1' },
+  helpButton: { backgroundColor: '#EFE9FB', paddingVertical: 8, paddingHorizontal: 11, borderRadius: 9 },
+  helpText: { fontWeight: '800', color: '#5B3FA8', fontSize: 12 },
+  heading: { fontSize: 30, fontWeight: '900', color: '#2A1F4E', marginTop: 12 },
   subtitle: { color: '#75829A', fontSize: 13, marginTop: 7, marginBottom: 21, lineHeight: 20 },
   statsRow: { flexDirection: 'row', gap: 8, marginBottom: 24 },
   stat: { backgroundColor: '#FFFFFF', padding: 12, borderRadius: 15, flex: 1, borderColor: '#E7EBF3', borderWidth: 1 },
-  statDark: { backgroundColor: '#192C4D', borderColor: '#192C4D' },
+  statDark: { backgroundColor: '#3B2A6B', borderColor: '#3B2A6B' },
   statLabel: { fontWeight: '800', color: '#8390A5', fontSize: 9, letterSpacing: 0.35 },
   statLabelLight: { fontWeight: '800', color: '#B3C4DD', fontSize: 9, letterSpacing: 0.35 },
   statNumber: { marginTop: 8, color: '#1B3150', fontWeight: '900', fontSize: 25 },
@@ -253,14 +253,14 @@ const styles = StyleSheet.create({
   sectionHeading: { marginTop: 12 },
   addRow: { flexDirection: 'row', gap: 8, marginBottom: 7 },
   addInput: { flex: 1, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E0E6F0', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 11, color: '#1D3151', fontSize: 13, minWidth: 0 },
-  addButton: { backgroundColor: '#147D73', paddingHorizontal: 13, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  addButton: { backgroundColor: '#6A43C7', paddingHorizontal: 13, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
   addButtonText: { color: '#FFFFFF', fontWeight: '800', fontSize: 12 },
   cancelText: { color: '#8A93A6', fontSize: 12, fontWeight: '700', marginBottom: 8, textDecorationLine: 'underline' },
-  feedback: { color: '#147D73', fontSize: 12, marginBottom: 8 },
+  feedback: { color: '#6A43C7', fontSize: 12, marginBottom: 8 },
   searchInput: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E0E6F0', borderRadius: 12, paddingHorizontal: 13, paddingVertical: 13, color: '#1D3151', fontSize: 13, marginBottom: 12 },
   actions: { flexDirection: 'row', justifyContent: 'space-between', gap: 7, marginBottom: 13 },
-  retryButton: { paddingVertical: 11, paddingHorizontal: 11, backgroundColor: '#E5F2EF', borderRadius: 10, flex: 1, alignItems: 'center' },
-  retryLabel: { fontSize: 11, color: '#18776D', fontWeight: '800' },
+  retryButton: { paddingVertical: 11, paddingHorizontal: 11, backgroundColor: '#F1ECFC', borderRadius: 10, flex: 1, alignItems: 'center' },
+  retryLabel: { fontSize: 11, color: '#5B3FA8', fontWeight: '800' },
   simulateButton: { paddingVertical: 11, paddingHorizontal: 10, backgroundColor: '#FDEBEB', borderRadius: 10, flex: 1, alignItems: 'center' },
   simulateLabel: { fontSize: 11, color: '#B84F4F', fontWeight: '800' },
   error: { color: '#A53D49', backgroundColor: '#FFF0F0', padding: 11, borderRadius: 10, fontWeight: '700', marginBottom: 10, fontSize: 12 },

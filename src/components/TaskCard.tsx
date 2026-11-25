@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   card: { backgroundColor: '#FFFFFF', borderRadius: 17, padding: 16, marginBottom: 11, borderWidth: 1, borderColor: '#E7EBF3' },
   topLine: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   check: { height: 25, width: 25, borderRadius: 8, borderWidth: 2, borderColor: '#A9B2C6', justifyContent: 'center', alignItems: 'center' },
-  checked: { backgroundColor: '#147D73', borderColor: '#147D73' },
+  checked: { backgroundColor: '#6A43C7', borderColor: '#6A43C7' },
   checkText: { color: '#FFFFFF', fontWeight: '900', fontSize: 16 },
   content: { flex: 1 },
   title: { color: '#192846', fontSize: 15, fontWeight: '800', lineHeight: 21 },

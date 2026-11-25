@@ -41,18 +41,18 @@ export default function GuiaScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F5F7FB' },
+  screen: { flex: 1, backgroundColor: '#F8F6FD' },
   content: { paddingHorizontal: 22, paddingBottom: 35, paddingTop: 14 },
   back: { paddingVertical: 10, marginBottom: 20 },
-  backText: { color: '#137B70', fontWeight: '800' },
-  eyebrow: { fontSize: 10, letterSpacing: 1.6, color: '#178B7B', fontWeight: '900' },
+  backText: { color: '#5B3FA8', fontWeight: '800' },
+  eyebrow: { fontSize: 10, letterSpacing: 1.6, color: '#7A52D1', fontWeight: '900' },
   title: { fontSize: 29, color: '#1B2D4A', fontWeight: '900', marginTop: 10, lineHeight: 35 },
   intro: { fontSize: 14, color: '#69788F', lineHeight: 23, marginTop: 13, marginBottom: 22 },
-  callout: { backgroundColor: '#1A2E4C', borderRadius: 16, padding: 18, marginBottom: 20 },
+  callout: { backgroundColor: '#3B2A6B', borderRadius: 16, padding: 18, marginBottom: 20 },
   calloutTitle: { fontSize: 15, fontWeight: '900', color: '#FFFFFF' },
   calloutText: { marginTop: 7, color: '#DCE6F4', lineHeight: 20 },
   mission: { flexDirection: 'row', backgroundColor: '#FFFFFF', padding: 16, borderRadius: 13, gap: 14, marginBottom: 9 },
-  number: { color: '#168A7A', fontWeight: '900' },
+  number: { color: '#7A52D1', fontWeight: '900' },
   missionText: { flex: 1, color: '#314864', lineHeight: 20, fontSize: 13 },
   note: { marginTop: 22, color: '#60718A', fontStyle: 'italic', lineHeight: 19 },
 });
