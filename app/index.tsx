@@ -41,7 +41,8 @@ export default function TaskManagerScreen() {
     void loadTasks();
   }, []);
 
-  const visibleTasks = useMemo(() => filterTasks(tasks, query, status), [tasks, status]);
+  // Corregido: agregue query a las dependencias, sin eso no se recalculaba al escribir
+  const visibleTasks = useMemo(() => filterTasks(tasks, query, status), [tasks, query, status]);
   const total = tasks.length;
   const completed = tasks.filter((task) => task.completed).length;
 
