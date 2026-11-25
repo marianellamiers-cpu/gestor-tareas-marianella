@@ -6,9 +6,10 @@ type TaskCardProps = {
   task: Task;
   onToggle: () => void;
   onDelete: () => void;
+  onEdit?: () => void; // opcional: lo agregue para poder editar el titulo
 };
 
-export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
+export function TaskCard({ task, onToggle, onDelete, onEdit }: TaskCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -46,9 +47,16 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
       {expanded ? (
         <View style={styles.details} testID={`details-${task.id}`}>
           <Text style={styles.description}>{task.description}</Text>
-          <Pressable accessibilityRole="button" onPress={onDelete} style={styles.deleteButton}>
-            <Text style={styles.deleteText}>Eliminar tarea</Text>
-          </Pressable>
+          <View style={styles.actionsRow}>
+            {onEdit ? (
+              <Pressable accessibilityRole="button" testID={`edit-${task.id}`} onPress={onEdit} style={styles.editButton}>
+                <Text style={styles.editText}>Editar</Text>
+              </Pressable>
+            ) : null}
+            <Pressable accessibilityRole="button" onPress={onDelete} style={styles.deleteButton}>
+              <Text style={styles.deleteText}>Eliminar tarea</Text>
+            </Pressable>
+          </View>
         </View>
       ) : null}
     </View>
@@ -73,6 +81,9 @@ const styles = StyleSheet.create({
   expandText: { color: '#294665', fontWeight: '800', fontSize: 19 },
   details: { marginTop: 13, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#E9EEF4' },
   description: { fontSize: 13, color: '#53627E', lineHeight: 20 },
+  actionsRow: { flexDirection: 'row', gap: 8 },
+  editButton: { alignSelf: 'flex-start', marginTop: 13, paddingVertical: 8, paddingHorizontal: 12, backgroundColor: '#EFE9FB', borderRadius: 9 },
+  editText: { color: '#5B3FA8', fontSize: 12, fontWeight: '800' },
   deleteButton: { alignSelf: 'flex-start', marginTop: 13, paddingVertical: 8, paddingHorizontal: 12, backgroundColor: '#FFF0F0', borderRadius: 9 },
   deleteText: { color: '#B63D4E', fontSize: 12, fontWeight: '800' },
 });

@@ -21,6 +21,7 @@ export default function TaskManagerScreen() {
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState('');
   const [ocupado, setOcupado] = useState(false);
+  const [editando, setEditando] = useState<Task | null>(null); // tarea que se esta editando
 
   async function loadTasks(simulateFailure = false) {
     setLoading(true);
@@ -86,6 +87,41 @@ export default function TaskManagerScreen() {
     }
   }
 
+  function empezarEdicion(task: Task) {
+    setEditando(task);
+    setNewTitle(task.title);
+    setFeedback('Editando: cambiá el título y tocá Guardar.');
+  }
+
+  function cancelarEdicion() {
+    setEditando(null);
+    setNewTitle('');
+    setFeedback('');
+  }
+
+  // Edita el titulo con PUT. Reuso la misma validacion que al agregar.
+  async function guardarEdicion() {
+    if (!editando) return;
+    if (!isValidTaskTitle(newTitle)) {
+      setFeedback('El título no puede quedar vacío.');
+      return;
+    }
+    setOcupado(true);
+    try {
+      const actualizada = await guardarTarea({ ...editando, title: newTitle });
+      setTasks((previous) => previous.map((task) => (task.id === actualizada.id ? actualizada : task)));
+      setEditando(null);
+      setNewTitle('');
+      setFeedback('Cambios guardados.');
+      Keyboard.dismiss();
+    } catch (caught) {
+      console.error('[guardarEdicion] no se pudo editar', caught);
+      setFeedback(caught instanceof Error ? caught.message : 'No se pudo guardar la edición.');
+    } finally {
+      setOcupado(false);
+    }
+  }
+
   async function deleteTask(id: string) {
     try {
       await borrarTarea(id);
@@ -104,7 +140,11 @@ export default function TaskManagerScreen() {
         // Corregido: con el indice como key, al filtrar quedaba expandida otra tarjeta
         keyExtractor={(item) => `tarea-${item.id}`}
         renderItem={({ item }) => (
-          <TaskCard task={item} onToggle={() => void toggleTask(item.id)} onDelete={() => void deleteTask(item.id)} />
+          <TaskCard
+            task={item} onToggle={() => void toggleTask(item.id)}
+            onDelete={() => void deleteTask(item.id)}
+            onEdit={() => empezarEdicion(item)}
+          />
         )}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.listContainer}
@@ -134,7 +174,7 @@ export default function TaskManagerScreen() {
               </View>
             </View>
 
-            <Text style={styles.label}>NUEVA TAREA</Text>
+            <Text style={styles.label}>{editando ? 'EDITAR TAREA' : 'NUEVA TAREA'}</Text>
             <View style={styles.addRow}>
               <TextInput
                 testID="new-task-input"
@@ -146,10 +186,15 @@ export default function TaskManagerScreen() {
                 returnKeyType="done"
                 style={styles.addInput}
               />
-              <Pressable accessibilityRole="button" testID="add-task-button" style={[styles.addButton, ocupado && { opacity: 0.5 }]} onPress={() => void addTask()} disabled={ocupado}>
-                <Text style={styles.addButtonText}>{ocupado ? '...' : 'Agregar'}</Text>
+              <Pressable accessibilityRole="button" testID="add-task-button" style={[styles.addButton, ocupado && { opacity: 0.5 }]} onPress={() => void (editando ? guardarEdicion() : addTask())} disabled={ocupado}>
+                <Text style={styles.addButtonText}>{ocupado ? '...' : editando ? 'Guardar' : 'Agregar'}</Text>
               </Pressable>
             </View>
+            {editando ? (
+              <Pressable accessibilityRole="button" testID="cancel-edit-button" onPress={cancelarEdicion}>
+                <Text style={styles.cancelText}>Cancelar edición</Text>
+              </Pressable>
+            ) : null}
             {feedback ? <Text style={styles.feedback}>{feedback}</Text> : null}
 
             <Text style={[styles.label, styles.sectionHeading]}>MIS TAREAS</Text>
@@ -210,6 +255,7 @@ const styles = StyleSheet.create({
   addInput: { flex: 1, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E0E6F0', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 11, color: '#1D3151', fontSize: 13, minWidth: 0 },
   addButton: { backgroundColor: '#147D73', paddingHorizontal: 13, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
   addButtonText: { color: '#FFFFFF', fontWeight: '800', fontSize: 12 },
+  cancelText: { color: '#8A93A6', fontSize: 12, fontWeight: '700', marginBottom: 8, textDecorationLine: 'underline' },
   feedback: { color: '#147D73', fontSize: 12, marginBottom: 8 },
   searchInput: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E0E6F0', borderRadius: 12, paddingHorizontal: 13, paddingVertical: 13, color: '#1D3151', fontSize: 13, marginBottom: 12 },
   actions: { flexDirection: 'row', justifyContent: 'space-between', gap: 7, marginBottom: 13 },
