@@ -83,7 +83,8 @@ export default function TaskManagerScreen() {
     <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
       <FlatList
         data={loading ? [] : visibleTasks}
-        keyExtractor={(_item, index) => String(index)}
+        // Corregido: con el indice como key, al filtrar quedaba expandida otra tarjeta
+        keyExtractor={(item) => `tarea-${item.id}`}
         renderItem={({ item }) => (
           <TaskCard task={item} onToggle={() => toggleTask(item.id)} onDelete={() => deleteTask(item.id)} />
         )}
