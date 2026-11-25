@@ -1,56 +1,48 @@
-# Gestor de tareas — Taller de debugging y testing (Expo SDK 57)
+# Tareas Marianella · EDI
 
-Proyecto **independiente** de React Native + Expo Router + TypeScript para 3.º año. Contiene defectos **intencionales** que permiten enseñar diagnóstico, debugging, pruebas y documentación. No necesita backend: el servicio de tareas es simulado.
+**Alumna:** Marianella Miers · 3.er año · Desarrollo de Software
 
-## Requisitos
-- Node.js **22.13 o superior** (mínimo para SDK 57; usar una versión LTS compatible).
-- npm y VS Code.
-- Emulador Android, Expo Go compatible, o una development build cuya configuración nativa sea compatible.
+App móvil hecha con React Native + Expo Router + TypeScript (Expo SDK 57). Parte del Gestor de tareas de la clase 11 del profe y está conectada al backend de tareas de Programación III:
 
-## Ejecutar
-```bash
+- API: `https://api.montenegroariel.com.ar` (Swagger en `/docs`)
+- Errores encontrados y corregidos: ver `INFORME_INCIDENTES.md`
+
+## Funciones
+| Función | Cómo se usa | Backend |
+|---|---|---|
+| Ver tareas | se cargan al abrir o con "Actualizar lista" | `GET /tasks/` |
+| Agregar | escribir en "Nueva tarea" y tocar Agregar | `POST /tasks/` |
+| Completar | tocar el cuadrado de la tarea | `PUT /tasks/{id}` |
+| Editar título | abrir la tarjeta (+) → Editar → Guardar | `PUT /tasks/{id}` |
+| Eliminar | abrir la tarjeta (+) → Eliminar tarea | `DELETE /tasks/{id}` |
+| Buscar / filtrar | buscador y pestañas Todas / Pendientes / Completadas | — |
+| Probar error | botón "Simular error API" | — |
+
+## Carpetas
+- `app/` → pantallas: `index.tsx` (lista), `guia.tsx` (consigna)
+- `src/services/cliente.ts` → función `llamarApi` (URL, tiempo máximo, errores)
+- `src/services/taskService.ts` → operaciones con las tareas
+- `src/components/` → `TaskCard` (tarjeta con Editar y Eliminar) y `StatusTabs`
+- `src/utils/` → filtro de búsqueda y validación del título
+- `__tests__/` → pruebas con Jest
+- `eas.json` → perfil `preview` para la APK
+
+## Cómo correrla
+```
 npm install
-npx expo install --fix
-npx expo start --dev-client
+copy .env.example .env
+npx expo start --go
 ```
-Abrí la development build instalada y conectala al servidor. Si usás Expo Go (con SDK 57 compatible), ejecutá `npx expo start --go`.
+y escanear el QR con Expo Go (SDK 57).
 
-> **Muy importante:** una APK de desarrollo creada para otro proyecto no garantiza compatibilidad nativa con este proyecto. Si falta un módulo, la versión de SDK no coincide o la APK no puede abrirlo, generá una development build correspondiente. Las correcciones de JS/TS **no requieren reconstrucción** de una development build compatible.
-
-## Ejecutar tests
-```bash
+## Pruebas
+```
 npm test
-```
-El proyecto contiene pruebas que **deben fallar antes de corregir** algunos errores. Se diseñaron para mostrar cómo un test evidencia un fallo.
-
-## Qué puede hacer la app
-- Listar tareas con un servicio mock de 700 ms.
-- Buscar tareas y filtrarlas por estado.
-- Agregar y eliminar tareas.
-- Cambiar el estado completada/pendiente.
-- Expandir tarjetas para ver el detalle.
-- Simular una caída de servicio (HTTP 503 ficticio).
-- Abrir una pantalla con la consigna.
-
-## Estructura
-```text
-app/                      # Rutas de Expo Router (_layout, inicio, guía)
-src/components/           # TaskCard, StatusTabs
-src/services/             # Servicio mock, sin llamadas reales
-src/types/                # Tipos TypeScript
-src/utils/                # Filtrado y validaciones
-__tests__/                # Pruebas unitarias y de componentes
-INFORME_INCIDENTES.md     # Plantilla a completar
+npm run typecheck
 ```
 
-## Trabajo del estudiante
-1. Crear un commit de respaldo al iniciar.
-2. Navegar la app y reproducir los comportamientos inesperados.
-3. Corregir **al menos 4 errores** con cambios pequeños y justificados.
-4. Usar DevTools/console y ejecutar `npm test` antes y después.
-5. Completar `INFORME_INCIDENTES.md` y entregar un commit final.
-
-**Evitar:** buscar soluciones completas o cambiar muchos archivos sin hipótesis de causa raíz.
-
-## Compatibilidad
-Diseñado para SDK 57 / React Native 0.86 / React 19.2.3. `npx expo install --fix` alinea las versiones con el SDK que realmente utiliza la app; no es una orden para actualizar de SDK mayor. No se incluye APK compilada ni `node_modules` en el ZIP.
+## APK
+```
+npx eas-cli login
+npx eas-cli build -p android --profile preview
+```
