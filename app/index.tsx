@@ -44,11 +44,13 @@ export default function TaskManagerScreen() {
   const completed = tasks.filter((task) => task.completed).length;
 
   function toggleTask(id: string) {
-    const found = tasks.find((task) => task.id === id);
-    if (found) {
-      found.completed = !found.completed;
-      setTasks(tasks);
-    }
+    // Corregido: no hay que cambiar el objeto del estado directamente.
+    // Creo una lista nueva y una copia de la tarea modificada para que React la redibuje.
+    const nuevaLista = tasks.map((task) => {
+      if (task.id !== id) return task;
+      return { ...task, completed: !task.completed };
+    });
+    setTasks(nuevaLista);
   }
 
   function addTask() {
